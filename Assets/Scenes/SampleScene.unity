@@ -8697,10 +8697,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  jumpForce: 5
+  jumpForce: 175
   rayDistance: 10
   isGrounded: 0
   playerAnimator: {fileID: 919132149603880276}
+  mouseSensitivity: 300
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 8

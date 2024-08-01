@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private float xAxis;
     private float yAxis;
+    public float mouseSensitivity = 100f;
+    private float yRotation = 0f;
 
     public LayerMask groundLayerMask;
 
@@ -26,11 +28,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        Input();
+        PlayerInput();
         MovementAnimation();
         GravitySwitcher();
         Jump();
-
+        if (!HoloIndicator.canManipulate)
+        {
+            Debug.Log("CAN ROTATE");
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+            yRotation += mouseX;
+            Camera.main.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+        }
     }
 
     private void MovementAnimation()
@@ -39,11 +47,11 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator.SetBool("isRunning", isRunning);
     }
 
-    private void Input()
+    private void PlayerInput()
     {
         isGrounded = Physics.CheckSphere(transform.position, 0.1f, groundLayerMask);
-        xAxis = UnityEngine.Input.GetAxis("Horizontal");
-        yAxis = UnityEngine.Input.GetAxis("Vertical");
+        xAxis = Input.GetAxis("Horizontal");
+        yAxis = Input.GetAxis("Vertical");
     }
 
     void GravitySwitcher()
@@ -54,25 +62,25 @@ public class PlayerMovement : MonoBehaviour
             case GravitySide.UP:
                 Debug.Log("UP state");
                 rb.AddForce(-Vector3.down * gravityForce, ForceMode.Acceleration);
-                movement = player.transform.right * xAxis + player.transform.forward * yAxis;
+                movement = Camera.main.transform.right * xAxis + Camera.main.transform.forward * yAxis;
                 rb.velocity = new Vector3(movement.x * speed, rb.velocity.y, movement.z * speed);
                 break;
             case GravitySide.LEFT:
                 Debug.Log("LEFT state");
                 rb.AddForce(Vector3.left * gravityForce, ForceMode.Acceleration);
-                movement = -player.transform.right * xAxis + player.transform.forward * yAxis;
+                movement = -Camera.main.transform.right * xAxis + Camera.main.transform.forward * yAxis;
                 rb.velocity = new Vector3(rb.velocity.x, movement.y * speed, movement.z * speed);
                 break;
             case GravitySide.RIGHT:
                 Debug.Log("RIGHT state");
                 rb.AddForce(-Vector3.left * gravityForce, ForceMode.Acceleration);
-                movement = player.transform.right * xAxis + player.transform.forward * yAxis;
+                movement = Camera.main.transform.right * xAxis + Camera.main.transform.forward * yAxis;
                 rb.velocity = new Vector3(rb.velocity.x, movement.y * speed, movement.z * speed);
                 break;
             case GravitySide.NORMAL:
                 Debug.Log("NORMAL state");
-                movement = player.transform.right * xAxis + player.transform.forward * yAxis;
-                rb.velocity = new Vector3(movement.x * speed, rb.velocity.y * speed, movement.z * speed);
+                movement = Camera.main.transform.right * xAxis + Camera.main.transform.forward * yAxis;
+                rb.velocity = new Vector3(movement.x * speed, rb.velocity.y, movement.z * speed);
                 break;
             default:
                 Debug.Log("Default State");
@@ -81,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Jump()
     {
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             playerAnimator.SetBool("isJumping", true);
