@@ -3,12 +3,12 @@ using UnityEngine;
 public class HoloIndicator : MonoBehaviour
 {
     public static GravitySide GravitySideEnum = GravitySide.NORMAL;
+    public static bool canManipulate = false;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private GameObject holoCharacter;
     [SerializeField] private GravitySide gravityType;
     [SerializeField] private bool canSwitchCharacter;
     private float playerPositionZ;
-    private bool canManipulate = false;
     void Start()
     {
         playerMovement = FindAnyObjectByType<PlayerMovement>();
@@ -30,8 +30,9 @@ public class HoloIndicator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            Debug.Log("enter " + Gravity);
             playerMovement.Player.transform.SetPositionAndRotation(holoCharacter.transform.position, holoCharacter.transform.rotation);
+            canManipulate = false;
+            Debug.Log("enter " + Gravity);
             holoCharacter.SetActive(false);
             GravitySideEnum = Gravity;
         }
